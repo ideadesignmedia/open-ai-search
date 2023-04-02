@@ -5,7 +5,7 @@ Uses AI embeddings to search for similar documents.
 ## Usage
 
 ``` yarn install; yarn start```
-starts the server on port 5000.
+Starts the server on port 5000.
 
 ## Routes
 
