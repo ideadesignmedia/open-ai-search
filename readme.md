@@ -3,6 +3,7 @@
 Uses AI embeddings to search for similar documents.
 
 ## Usage
+Add your OpenAI API key to the config.json file.
 
 ``` yarn install; yarn start```
 Starts the server on port 5000.
