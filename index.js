@@ -26,8 +26,7 @@ const cosineSimilarity = (a, b) => {
         mA = mA.plus(new BigNumber(a[i]).multipliedBy(a[i]));
         mB = mB.plus(new BigNumber(b[i]).multipliedBy(b[i]));
     }
-    let product = dotproduct.dividedBy(mA.sqrt().multipliedBy(mB.sqrt())).toFixed(5)
-    return product
+    return parseFloat(dotproduct.dividedBy(mA.sqrt().multipliedBy(mB.sqrt())).toFixed(5))
 } */
 const { Embedding } = makeModels(new db('embeddings'), [
     {
