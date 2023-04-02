@@ -119,7 +119,7 @@ app.post('/search', (req, res) => {
                     console.log(e)
                     return undefined
                 })
-                if (found) similarData.push({ input: a, embedding: found.embedding, similarity: cosineSimilarity(inputEmbedding.embedding, found.embedding) })
+                if (found) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding.embedding, found.embedding) })
                 else {
                     const embedding = await getEmbedding(a).then(async embeddings => {
                         const embedding = embeddings && embeddings.data ? embeddings.data[0].embedding : null
