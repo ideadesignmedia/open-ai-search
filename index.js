@@ -13,6 +13,22 @@ const cosineSimilarity = (a, b) => {
     }
     return dotproduct / (Math.sqrt(mA) * Math.sqrt(mB))
 }
+/* 
+If ever an issue of the numbers being too large/small, use this code to fix it with bignumber.js@9.1.1
+const BigNumber = require('bignumber.js')
+BigNumber.config({ EXPONENTIAL_AT: [-100, 100] })
+const cosineSimilarity = (a, b) => {
+    let dotproduct = new BigNumber(0);
+    let mA = new BigNumber(0);
+    let mB = new BigNumber(0);
+    for (i = 0; i < a.length; i++) {
+        dotproduct = dotproduct.plus(new BigNumber(a[i]).multipliedBy(b[i]));
+        mA = mA.plus(new BigNumber(a[i]).multipliedBy(a[i]));
+        mB = mB.plus(new BigNumber(b[i]).multipliedBy(b[i]));
+    }
+    let product = dotproduct.dividedBy(mA.sqrt().multipliedBy(mB.sqrt())).toFixed(5)
+    return product
+} */
 const { Embedding } = makeModels(new db('embeddings'), [
     {
         name: 'Embedding',
@@ -29,6 +45,7 @@ app.post('/embeddings', async (req, res) => {
     const { input } = req.body
     if (!input) return res.status(400).send('No input provided')
     const multiple = input instanceof Array
+    if (typeof input !== 'string' && (!multiple && input.every(a => typeof a === 'string'))) return res.status(400).send('Input must be a string or array of strings')
     const found = multiple ? await new Embedding().findAll({ input: a => input.includes(a) }).catch(e => {
         console.log(e)
         return []
@@ -75,9 +92,7 @@ app.post('/embeddings', async (req, res) => {
                 console.log('BAD EMBEDDING', input, embeddings)
                 return res.status(500).json({ error: true, message: 'Failed to get embedding' })
             }
-            construct(Embedding, { input, embedding }).then(data => data.save()).then(({ embedding }) => {
-                return res.status(200).json({ error: false, embedding })
-            }).catch(e => {
+            construct(Embedding, { input, embedding }).then(data => data.save()).then(({ embedding }) => res.status(200).json({ error: false, embedding })).catch(e => {
                 console.log(e)
                 return res.status(500).json({ error: true, message: 'Failed to save embedding' })
             })
@@ -95,23 +110,24 @@ app.post('/search', (req, res) => {
     if (!(data instanceof Array)) return res.status(400).json({ error: true, message: 'Data must be an array' })
     new Embedding().find({ input }).then(async inputEmbedding => {
         if (!inputEmbedding) inputEmbedding = await getEmbedding(input).then(async embeddings => {
-            const embedding = embeddings && embeddings.data ? embeddings.data[0].embedding : null
-            if (!embedding) return null
+            const embedding = embeddings && embeddings.data ? embeddings.data[0].embedding : undefined
+            if (!embedding) return undefined
             return await construct(Embedding, { input, embedding }).then(data => data.save()).then(({ embedding }) => embedding).catch(e => {
                 console.log(e)
-                return null
+                return undefined
             })
         }).catch(e => {
             console.log(e)
-            return null
+            return undefined
         })
+        else inputEmbedding = inputEmbedding.embedding
         if (!inputEmbedding) return res.status(500).json({ error: true, message: 'Failed to get input embedding' })
         const similarData = []
         for (let i = 0; i < data.length; i++) {
             const a = data[i]
             if (!a) continue
             if (a.input && a.embedding instanceof Array && a.embedding.every(a => typeof a === 'number')) {
-                similarData.push({ input: a.input, similarity: cosineSimilarity(inputEmbedding.embedding, a.embedding) })
+                similarData.push({ input: a.input, similarity: cosineSimilarity(inputEmbedding, a.embedding) })
             } else {
                 if (a.input) a = a.input
                 if (typeof a !== 'string') continue
@@ -119,7 +135,7 @@ app.post('/search', (req, res) => {
                     console.log(e)
                     return undefined
                 })
-                if (found) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding.embedding, found.embedding) })
+                if (found) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding, found.embedding) })
                 else {
                     const embedding = await getEmbedding(a).then(async embeddings => {
                         const embedding = embeddings && embeddings.data ? embeddings.data[0].embedding : null
@@ -132,7 +148,7 @@ app.post('/search', (req, res) => {
                         console.log(e)
                         return null
                     })
-                    if (embedding) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding.embedding, embedding) })
+                    if (embedding) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding, embedding) })
                 }
             }
         }

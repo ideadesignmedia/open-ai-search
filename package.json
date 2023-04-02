@@ -8,7 +8,8 @@
     "@ideadesignmedia/config.js": "^1.0.2",
     "@ideadesignmedia/db.js": "^1.3.4",
     "@ideadesignmedia/open-ai.js": "^1.0.3",
-    "@ideadesignmedia/webserver.js": "^1.6.11"
+    "@ideadesignmedia/webserver.js": "^1.6.11",
+    "bignumber.js": "^9.1.1"
   },
   "scripts": {
     "start": "node index.js"
