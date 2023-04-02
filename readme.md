@@ -53,19 +53,19 @@ Sample response:
     "error": false,
     "results": [
         {
-            "input": "hello",
+            "data": "hello",
             "similarity": 0.863932212554896
         },
         {
-            "input": "world",
+            "data": "world",
             "similarity": 0.8628597878658721
         },
         {
-            "input":"track",
+            "data":"track",
             "similarity":0.8182238349742279
         },
         {
-            "input": "test",
+            "data": "test",
             "similarity": 0.8175459141724035
         }
     ]
@@ -81,11 +81,11 @@ Sample response:
     "error": false,
     "results": [
         {
-            "input": "hello",
+            "data": "hello",
             "similarity": 0.863932212554896
         },
         {
-            "input": "world",
+            "data": "world",
             "similarity": 0.8628597878658721
         }
     ]

@@ -126,7 +126,7 @@ app.post('/search', (req, res) => {
             const a = data[i]
             if (!a) continue
             if (a.input && a.embedding instanceof Array && a.embedding.every(a => typeof a === 'number')) {
-                similarData.push({ input: a.input, similarity: cosineSimilarity(inputEmbedding, a.embedding) })
+                similarData.push({ data: a.input, similarity: cosineSimilarity(inputEmbedding, a.embedding) })
             } else {
                 if (a.input) a = a.input
                 if (typeof a !== 'string') continue
@@ -134,12 +134,12 @@ app.post('/search', (req, res) => {
                     console.log(e)
                     return undefined
                 })
-                if (found) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding, found.embedding) })
+                if (found) similarData.push({ data: a, similarity: cosineSimilarity(inputEmbedding, found.embedding) })
                 else {
                     const embedding = await getEmbedding(a).then(async embeddings => {
                         const embedding = embeddings && embeddings.data ? embeddings.data[0].embedding : null
                         if (!embedding) return null
-                        return await construct(Embedding, { input: a, embedding }).then(data => data.save()).then(({ embedding }) => embedding).catch(e => {
+                        return await construct(Embedding, { data: a, embedding }).then(data => data.save()).then(({ embedding }) => embedding).catch(e => {
                             console.log(e)
                             return null
                         })
@@ -147,7 +147,7 @@ app.post('/search', (req, res) => {
                         console.log(e)
                         return null
                     })
-                    if (embedding) similarData.push({ input: a, similarity: cosineSimilarity(inputEmbedding, embedding) })
+                    if (embedding) similarData.push({ data: a, similarity: cosineSimilarity(inputEmbedding, embedding) })
                 }
             }
         }
