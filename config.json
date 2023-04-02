@@ -1,0 +1,6 @@
+{
+    "PORT": 5000,
+    "OPEN_AI_SECRET": "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",
+    "OPEN_AI_ENDPOINT": "https://api.openai.com",
+    "OPEN_AI_ORGANIZATION": "org-i852WZbvflwOexAZDBOChBkt"
+}
