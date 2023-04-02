@@ -29,3 +29,8 @@ CURL:
 ```curl -X POST -H "Content-Type: application/json" -d '{"input": "hell", "data": ["test", "track", "hello", "world"]}' http://localhost:5000/search```
 Sample response:
 ```{"error": false, "results": [{"input": "hello", "similarity": 0.863932212554896},{"input": "world", "similarity": 0.8628597878658721},{"input":"track","similarity":0.8182238349742279},{"input": "test", "similarity": 0.8175459141724035}]}```
+
+Also you can add the limit parameter to limit the number of results: 
+```curl -X POST -H "Content-Type: application/json" -d '{"input": "hell", "data": ["test", "track", "hello", "world"], "limit": 2}' http://localhost:5000/search```
+Sample response:
+```{"error": false, "results": [{"input": "hello", "similarity": 0.863932212554896},{"input": "world", "similarity": 0.8628597878658721}]}```
